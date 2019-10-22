@@ -4,7 +4,42 @@
 
 require_once 'funcoesmysqlphp.php';
 
-$listarCadastro = listarCadastro();
+
+
+$id = "";
+$nome = "";
+$sobrenome = "";
+$email = "";
+$senha = "";
+$endereco = "";
+$complemento = "";
+$cidade = "";
+$estado = "";
+$cep = "";
+
+$evazio = empty($_GET);
+if(!$evazio){
+    $acao = $_GET['acao'];
+    $id = $_GET['ID'];
+    if($acao == "carregar"){
+        $cad = carregarCadastro($id);
+
+        $nome = $cad['NOME'];
+        $sobrenome = $cad['SOBRENOME'];
+        $email = $cad['EMAIL'];
+        $senha = $cad['SENHA'];
+        $endereco = $cad['ENDERECO'];
+        $complemento = $cad['COMPLEMENTO'];
+        $cidade = $cad['CIDADE'];
+        $estado = $cad['ESTADO'];
+        $cep = $cad['CEP'];
+    }
+
+    if($acao == "excluir"){
+
+    }
+}
+
 
 
 //print_r($_POST);  // IMPRESSÃO PARA VERFICIFCAR O QUE ESTÁ NO ARRAY
@@ -15,6 +50,7 @@ if($vazio){
     //echo "FALTA PREENCHER";
    
 } else {
+    $id = $_POST['id'];
     $nome = $_POST['cad_nome'];
     $sobrenome = $_POST['cad_sobrenome'];
     $email = $_POST['cad_email'];
@@ -25,11 +61,11 @@ if($vazio){
     $estado = $_POST['cad_estado'];
     $cep = $_POST['cad_cep'];
 
-    $cad = salvarcadastro($nome, $sobrenome, $email, $senha, $endereco, $complemento, $cidade, $estado, $cep);
+    $cad = salvarcadastro($id, $nome, $sobrenome, $email, $senha, $endereco, $complemento, $cidade, $estado, $cep);
     echo $cad;
 }
 
-
+    $listarCadastro = listarCadastro();
 
 ?>
 
@@ -50,13 +86,18 @@ if($vazio){
       <form id="cadastro" method="POST" action="cadastro.php"> <!-- era funcoes.php-->
 
         <div class="form-row">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" name="id" required="required" value="<?=$id?>" readonly>
+        </div>
+
+        <div class="form-row">
             <div class="col"><br>
                 <label for="nome">Nome</label>
-                <input type="text" class="form-control" name="cad_nome" required="required">
+                <input type="text" class="form-control" name="cad_nome" required="required" value="<?=$nome?>">
             </div>
             <div class="col"><br>
                 <label for="sobrenome">Sobrenome</label>
-                <input type="text" class="form-control" name="cad_sobrenome">
+                <input type="text" class="form-control" name="cad_sobrenome" value="<?=$sobrenome?>">
             </div>
         </div>
         <br>
@@ -64,34 +105,34 @@ if($vazio){
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="inputEmail4">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" name="cad_email">
+                <input type="email" class="form-control" id="inputEmail4" name="cad_email" value="<?=$email?>">
             </div>
             <div class="form-group col-md-6">
                 <label for="inputPassword4">Senha</label>
-                <input type="password" class="form-control" id="inputPassword4" name="cad_senha">
+                <input type="password" class="form-control" id="inputPassword4" name="cad_senha" value="<?=$senha?>">
             </div>
         </div>
         <br>
 
         <div class="form-group">
             <label for="inputAddress">Endereço</label>
-            <input type="text" class="form-control" id="inputAddress" name="cad_endereco">
+            <input type="text" class="form-control" id="inputAddress" name="cad_endereco" value="<?=$endereco?>">
         </div>
 
         <div class="form-group">
             <label for="inputAddress2">Complemento</label>
-            <input type="text" class="form-control" id="inputAddress2" placeholder="Apartmento, casa, ou andar" name="cad_complemento">
+            <input type="text" class="form-control" id="inputAddress2" placeholder="Apartmento, casa, ou andar" name="cad_complemento" value="<?=$complemento?>">
         </div>
         <br>
 
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="inputCity">Cidade</label>
-                <input type="text" class="form-control" id="inputCity" name="cad_cidade">
+                <input type="text" class="form-control" id="inputCity" name="cad_cidade" value="<?=$cidade?>">
             </div>
             <div class="form-group col-md-4">
                 <label for="inputState">Estado</label>
-                <select id="inputState" class="form-control" name="cad_estado">
+                <select id="inputState" class="form-control" name="cad_estado" value="<?=$estado?>">
                     <option selected>Selecionar</option>
                     <option value="PR">Paraná</option>
                     <option value="SC">Santa Catarina</option>
@@ -102,7 +143,7 @@ if($vazio){
 
             <div class="form-group col-md-2">
                 <label for="inputZip">CEP</label>
-                <input type="text" class="form-control cep" id="inputZip" name="cad_cep">
+                <input type="text" class="form-control cep" id="inputZip" name="cad_cep" value="<?=$cep?>">
             </div>
         </div>
 
@@ -125,6 +166,8 @@ if($vazio){
             <th>CIDADE</th>
             <th>ESTADO</th>
             <th>CEP</th>
+            <th>ALTERAR</th>
+            <th>EXCLUIR</th>
         </tr>
 
         <?php      
@@ -142,12 +185,13 @@ if($vazio){
             <td><?=$lista['CIDADE']?></td>
             <td><?=$lista['ESTADO']?></td>
             <td><?=$lista['CEP']?></td>
+            <td><a class="btn btn-primary" href="cadastro.php?acao=carregar&ID=<?=$lista['ID']?>">Carregar</td>
+            <td><a class="btn btn-danger" href="cadastro.php?acao=excluir&ID=<?=$lista['ID']?>">Excluir</td>
         </tr>
 
         <?php
             }
         ?>
-
     </table>
 
     <!-- script bootstrap -->
@@ -158,13 +202,14 @@ if($vazio){
     <!-- src do js -->    
     <script src = "_js/jquery.mask.js"></script>    
 
-    <!--copiar mask do jquery -->    
+    <!--copiar mask do jquery -->   
+    <!-- 
     <script>
        $(document).ready(function(){
         $('.cep').mask('00000-000');
         });
     </script>
-
+    -->     
 
 </div>
 </body>

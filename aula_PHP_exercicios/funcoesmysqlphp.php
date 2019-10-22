@@ -20,9 +20,33 @@
     }
 
    
-    function salvarcadastro($nome, $sobrenome, $email, $senha, $endereco, $complemento, $cidade, $estado, $cep){
+    function salvarcadastro($id, $nome, $sobrenome, $email, $senha, $endereco, $complemento, $cidade, $estado, $cep){
         $conn = conexao();
-        $stmt = $conn->prepare("INSERT INTO php (NOME, SOBRENOME, EMAIL, SENHA, ENDERECO, COMPLEMENTO, CIDADE, ESTADO, CEP) VALUES (:nome,:sobrenome,:email,:senha,:endereco,:complemento,:cidade,:estado,:cep)");
+
+        if(empty($id)){
+            $stmt = $conn->prepare("INSERT INTO php (NOME, 
+            SOBRENOME, 
+            EMAIL, 
+            SENHA, 
+            ENDERECO, 
+            COMPLEMENTO, 
+            CIDADE, 
+            ESTADO,
+             CEP) VALUES (:nome,:sobrenome,:email,:senha,:endereco,:complemento,:cidade,:estado,:cep)");
+        } else {
+            $stmt = $conn->prepare("UPDATE php SET 
+            nome= :nome, 
+            sobrenome= :sobrenome, 
+            email= :email, 
+            senha= :senha, 
+            endereco= :endereco, 
+            complemento= :complemento, 
+            cidade= :cidade, 
+            estado= :estado, 
+            cep= :cep WHERE id= :id");      
+            $stmt-> bindParam(":id", $id);
+        }
+
         $stmt-> bindParam(":nome", $nome);
         $stmt-> bindParam(":sobrenome", $sobrenome);
         $stmt-> bindParam(":email", $email);
@@ -48,6 +72,30 @@
 
         if($stmt->execute()){
             return ($stmt->fetchAll(PDO::FETCH_ASSOC));
+        } else {
+            print_r($stmt->errorInfo());
+            return "<script> alert('Consulta não Realizada !');</script>";
+        }
+    }   
+
+
+    function carregarCadastro ($id){
+        $conn = conexao();
+        $stmt = $conn->prepare ("SELECT 
+        ID, 
+        NOME, 
+        SOBRENOME, 
+        EMAIL, 
+        SENHA, 
+        ENDERECO, 
+        COMPLEMENTO, 
+        CIDADE, 
+        ESTADO, 
+        CEP FROM php  where id = :id");
+
+        $stmt->bindParam(":id",$id);    
+        if($stmt->execute()){
+            return ($stmt->fetch(PDO::FETCH_ASSOC));
         } else {
             print_r($stmt->errorInfo());
             return "<script> alert('Consulta não Realizada !');</script>";
