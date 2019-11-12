@@ -4,6 +4,15 @@
 
 require_once 'funcoesmysqlphp.php';
 
+//Aula 28/10
+$url ="";
+
+if(!empty($_FILES)){
+    $pastaimagens = "C:\\xampp\\htdocs\\aula_PHP_exercicios\\_imagens\\";
+    $nomearquivo = $_FILES['foto']['name'];
+    move_uploaded_file($_FILES['foto']['tmp_name'],$pastaimagens.$nomearquivo);
+    $url = "_imagens/".$nomearquivo;
+}
 
 
 $id = "";
@@ -33,10 +42,11 @@ if(!$evazio){
         $cidade = $cad['CIDADE'];
         $estado = $cad['ESTADO'];
         $cep = $cad['CEP'];
+        $url = $cad['URL'];
     }
 
     if($acao == "excluir"){
-
+        $cad = excluirCadastro($id);
     }
 }
 
@@ -61,7 +71,7 @@ if($vazio){
     $estado = $_POST['cad_estado'];
     $cep = $_POST['cad_cep'];
 
-    $cad = salvarcadastro($id, $nome, $sobrenome, $email, $senha, $endereco, $complemento, $cidade, $estado, $cep);
+    $cad = salvarcadastro($id, $nome, $sobrenome, $email, $senha, $endereco, $complemento, $cidade, $estado, $cep, $url);
     echo $cad;
 }
 
@@ -83,7 +93,7 @@ if($vazio){
 
 <h1 style="text-align: center">Cadastro de Cliente</h1>
 <div class="container">
-      <form id="cadastro" method="POST" action="cadastro.php"> <!-- era funcoes.php-->
+      <form id="cadastro" method="POST" action="cadastro.php" enctype="multipart/form-data"> 
 
         <div class="form-row">
             <label for="id">ID</label>
@@ -126,29 +136,34 @@ if($vazio){
         <br>
 
         <div class="form-row">
+
             <div class="form-group col-md-6">
                 <label for="inputCity">Cidade</label>
                 <input type="text" class="form-control" id="inputCity" name="cad_cidade" value="<?=$cidade?>">
             </div>
+
             <div class="form-group col-md-4">
                 <label for="inputState">Estado</label>
                 <select id="inputState" class="form-control" name="cad_estado" value="<?=$estado?>">
-                    <option selected>Selecionar</option>
+                    <option value="<?=$estado?>">Selecionar</option>
                     <option value="PR">Paraná</option>
                     <option value="SC">Santa Catarina</option>
                     <option value="RS">Rio Grande do Sul</option>
                 </select>
             </div>
             
-
             <div class="form-group col-md-2">
                 <label for="inputZip">CEP</label>
                 <input type="text" class="form-control cep" id="inputZip" name="cad_cep" value="<?=$cep?>">
             </div>
+
         </div>
 
+        
+            <input type="file" name="foto"/>
+            <br/><br/>
         <div>
-            <button type="submit">Enviar</button>
+            <button class="btn btn-dark" type="submit">Enviar</button>
         </div>
     </form>
 
@@ -156,6 +171,7 @@ if($vazio){
 
     <table class="table">
         <tr>
+            <th>IMAGEM</th>
             <th>ID</th>
             <th>NOME</th>
             <th>SOBRENOME</th>
@@ -175,6 +191,7 @@ if($vazio){
         ?>
 
         <tr>
+            <td><img src="<?=$lista['URL']?>" width="50px" height="50px"></td>
             <td><?=$lista['ID']?></td>
             <td><?=$lista['NOME']?></td>
             <td><?=$lista['SOBRENOME']?></td>

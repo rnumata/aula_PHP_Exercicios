@@ -1,5 +1,10 @@
 <?php
 require_once 'funcoesmysqlphp.php';
+
+//unset($_SESSION['carrinho']['']);
+
+//$cont = 0;
+
 ?>
 <html>
 
@@ -18,17 +23,18 @@ require_once 'funcoesmysqlphp.php';
         <?php    
         session_start();
 
-        if(empty($_SESSION['carrinhho'])){
-            $_SESSION['carrinhho'] = array();
+        if(empty($_SESSION['carrinho'])){
+            $_SESSION['carrinho'] = array();
         } 
 
         if(!empty($_GET)){
             $id = $_GET['ID'];
             $item = carregarCadastro($id);
-            array_push($_SESSION['carrinhho'], $item);
+            array_push($_SESSION['carrinho'], $item);
         }
 
-        $carrinho = $_SESSION['carrinhho'];
+        $carrinho = $_SESSION['carrinho'];
+
         ?>
 
 <table class="table">
@@ -40,17 +46,21 @@ require_once 'funcoesmysqlphp.php';
          </tr>
 
         <?php      
-            foreach ($carrinho as $item){
+            foreach ($carrinho as $key => $item){
+               echo $key;
         ?>
-
+            
         <tr>
             <td><img src="<?=$item['URL']?>" width="50px" height="50px"></td>
             <td><?=$item['NOME']?></td>
             <td><?=$item['SOBRENOME']?></td>
             <td>1</td>
             
-            <td><a href="#">Excluir</td>
+            <td><a href="carrinho.php?acao=excluir<?=$key?> ">Excluir</td>
+
+            
         </tr>
+
 
         <?php
             }
